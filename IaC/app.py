@@ -2,9 +2,11 @@
 import os
 
 import aws_cdk as cdk
+from dotenv import load_dotenv
 
 from iac.iac_stack import IaCStack
 
+load_dotenv()
 
 app = cdk.App()
 IaCStack(app, "IaCStack",
