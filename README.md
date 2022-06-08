@@ -21,7 +21,7 @@ users could assume a IAM Role and pass those credentials on the Lambda URL HTTPS
 
 
 ### Setup the environment
-#### Go to IaC folder
+#### Go to IaC folder (all the commands bellow should be executed on the IaC folder)
 ```shell
 cd IaC
 ```
