@@ -23,6 +23,8 @@ users could assume an IAM Role and pass those credentials on the Lambda URL HTTP
 ![img.png](docs_assets/cognito_user_management_diagram.png)
 
 
+## How to run the project
+
 ### Prerequisites
 - python 3.9.x with pip
 - aws cli - [link](https://aws.amazon.com/cli/) (you should have it configured with credentials that have access to create all the resources - check this [guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) to configure the CLI)
