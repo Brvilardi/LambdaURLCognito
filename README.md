@@ -52,32 +52,29 @@ run cdk deploy
 ```
 
 
-Test Using Lambda Console: (Todo: setup a Step Functions to do most of the work and create an infra design on draw.io)
-- Create user 
-  - LambdaCognitoSignUp (pass username and password on event)
+### Test using Step Functions Console
 
-  - Event example: 
-  ```json 
-  {"username": "bruno", "password": "Teste123!"} 
-  ```
+#### Start execution
+Open LambdaCognitoStateMachine via console and click "Start Execution"
+![img_1.png](docs_assets/step_functions_state_machine.png)
 
-- Login user to get idToken
-  - LambdaCognitoSignIn (pass username and password on event) and grab idToken
-  - Event example:
-  ```json 
-  {"username": "bruno", "password": "Teste123!"} 
-  ```
-- Get AWS Temporary Credentials
-  - LambdaCognitoGetCredentials (pass idToken on event) and grab accessKeyId, secretAccessKey, sessionToken
-  - Event example:
-  ```json 
-  {"idToken": "dasdasjd123423[...]dsad234"} 
-  ```
+#### Set the input parameters
+```json
+{
+  "action": "signup", //or "login"
+  "username": "NAME",
+  "password": "PASSWORD" // should be compliant with Cognito password policy
+}
+```
 
-Using Postman:
-- grab credentials (AccessKey, SecretKey and Session) from LambdaCognitoGetCredentials
-- grab LambdaServer function URL endpoint
-- pass credentials on Postman and send the request
+#### Get credentials on the execution output
+![img.png](docs_assets/step_functions_output.png)
+
+
+#### Using Postman to make the request:
+- Grab credentials (AccessKey, SecretKey and Session) from Step Functions execution
+- Grab LambdaServer function URL endpoint
+- Pass credentials on Postman and send the request
 
 Result with credentials:
 ![img.png](docs_assets/postman_success.png)
