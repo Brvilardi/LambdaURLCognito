@@ -14,5 +14,13 @@ def lambda_handler(event, context):
             'PASSWORD': password
         }
     )
-    return response
+    accessToken = response['AuthenticationResult']['AccessToken']
+    idToken = response['AuthenticationResult']['IdToken']
+    refreshToken = response['AuthenticationResult']['RefreshToken']
+
+    return {
+        "accessToken": accessToken,
+        "idToken": idToken,
+        "refreshToken": refreshToken
+    }
 

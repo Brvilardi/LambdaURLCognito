@@ -9,6 +9,7 @@ from constructs import Construct
 
 from .cognito_stack import CognitoStack
 from .lambda_stack import LambdaStack
+from .step_function_stack import StepFunctionStack
 
 
 class IaCStack(Stack):
@@ -51,6 +52,10 @@ class IaCStack(Stack):
                 "authenticated": cognitoAuthRole.role_arn
             }
         )
+
+        # Setup Step Functions
+
+        step_functions = StepFunctionStack(self, lambdaStack=lambdaStack)
 
 
 
