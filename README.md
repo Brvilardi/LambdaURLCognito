@@ -55,15 +55,29 @@ run cdk deploy
 Test Using Lambda Console: (Todo: setup a Step Functions to do most of the work and create an infra design on draw.io)
 - Create user 
   - LambdaCognitoSignUp (pass username and password on event)
+
+  - Event example: 
+  ```json 
+  {"username": "bruno", "password": "Teste123!"} 
+  ```
+
 - Login user to get idToken
   - LambdaCognitoSignIn (pass username and password on event) and grab idToken
+  - Event example:
+  ```json 
+  {"username": "bruno", "password": "Teste123!"} 
+  ```
 - Get AWS Temporary Credentials
   - LambdaCognitoGetCredentials (pass idToken on event) and grab accessKeyId, secretAccessKey, sessionToken
+  - Event example:
+  ```json 
+  {"idToken": "dasdasjd123423[...]dsad234"} 
+  ```
 
 Using Postman:
-- grab credentials
-- grab LambdaServer functio URL
-- pass credentials on Postman and run
+- grab credentials (AccessKey, SecretKey and Session) from LambdaCognitoGetCredentials
+- grab LambdaServer function URL endpoint
+- pass credentials on Postman and send the request
 
 Result with credentials:
 ![img.png](docs_assets/postman_success.png)
