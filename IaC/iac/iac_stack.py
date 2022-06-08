@@ -8,6 +8,7 @@ from aws_cdk import (
 from constructs import Construct
 
 from .cognito_stack import CognitoStack
+from .lambda_stack import LambdaStack
 
 
 class IaCStack(Stack):
@@ -20,84 +21,18 @@ class IaCStack(Stack):
 
 
         # Setup Lambda Functions
-
-        lambda_function_server = lambda_.Function(self, 'Lambda Function Server',
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset('../lambda_functions/server'),
-            handler='server.lambda_handler'
-        )
-        lambda_function_server.add_function_url()
-
-        lambda_function_cognito_login = lambda_.Function(self, 'Lambda Function Cognito Login',
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset('../lambda_functions/cognito_login'),
-            handler='cognito_login.lambda_handler',
-            environment={
-                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
-                'CLIENT_ID': cognitoStack.cognitoClient.user_pool_client_id
-            }
-        )
+        lambdaStack = LambdaStack(self, cognitoStack=cognitoStack)
 
 
-        lambda_function_cognito_signup = lambda_.Function(self, 'Lambda Function Cognito Signup',
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset('../lambda_functions/cognito_signup'),
-            handler='cognito_signup.lambda_handler',
-            environment={
-                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
-                'CLIENT_ID': cognitoStack.cognitoClient.user_pool_client_id
-            }
-        )
-
-        lambda_function_cognito_signup.add_to_role_policy(
-            iam.PolicyStatement(
-                effect=iam.Effect.ALLOW,
-                actions=[
-                    "cognito-idp:AdminConfirmSignUp"
-                ],
-                resources=[
-                    cognitoStack.cognitoUserPool.user_pool_arn
-                ]
-            )
-        )
-
-        lambda_function_cognito_get_credentials = lambda_.Function(self, 'Lambda Function Cognito Get Credentials',
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset('../lambda_functions/cognito_get_credentials'),
-            handler='cognito_get_credentials.lambda_handler',
-            environment={
-                'IDENTITY_POOL_ID': cognitoStack.cognitoIdentityPool.ref,
-                'IDENTITY_POOL_REGION': self.region,
-                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
-            }
-        )
-
-
-
-        lambda_function_cognito_get_credentials.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=[
-                    'cognito-identity:GetCredentialsForIdentity',
-                    'cognito-identity:GetId'
-                    ],
-                resources=[
-                    f"arn:aws:cognito-identity:{self.region}:{self.account}:identitypool/{cognitoStack.cognitoIdentityPool.ref}"
-                ],
-                effect=iam.Effect.ALLOW
-            )
-        )
-
-
-        # Setup IAM Roles to allow Lambda Functions to be called by Cognito
+        # Setup IAM Roles and Cognito Identity Pool to allow cognito users to call Lambda server function
 
         allowInvokeServerLambdaPolicyStatement = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
             actions=[
                 "lambda:InvokeFunctionUrl",
             ],
-            resources=[lambda_function_server.function_arn]
+            resources=[lambdaStack.lambda_function_server.function_arn]
         )
-
 
         cognitoAuthRole = iam.Role(self, "CognitoAuthRole",
             assumed_by=iam.WebIdentityPrincipal("cognito-identity.amazonaws.com",
