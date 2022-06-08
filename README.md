@@ -11,6 +11,15 @@ that Lambda function
 The main objective of this project is to test and demonstrate how Cognito authenticated 
 users could assume an IAM Role and pass those credentials on the Lambda URL HTTPS request to invoke it.
 
+## Project Architecture
+
+### Lambda Function URL execution
+![img_1.png](docs_assets/lambda_url_diagram.png)
+
+
+### Cognito User Authentication
+![img.png](docs_assets/cognito_user_management_diagram.png)
+
 
 ### Prerequisites
 - python 3.9.x with pip
