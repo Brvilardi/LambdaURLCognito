@@ -1,10 +1,12 @@
 # LambdaURLCognito
 
 ## Overview
-Lambda Function URLs are a feature of AWS Lambda that allows the invocation of a Lambda function
-via HTTPS request without the need of any other AWS service to handle the request (usually this was done with Amazon API Gateway).
+Lambda Function URLs are a new feature that allows the invocation of a Lambda function
+via HTTPS request without the need of any other AWS service to handle the request (before this feature we **had** to use services like Amazon API Gateway).
+
 Lambda URLs come with two AuthTypes (NONE and IAM_USER), with NONE everyone with the endpoint can make requests and 
-with IAM_USER the Lambda is only invoked if the request have an IAM User or Role credentials which has an ALLOW policy to invoke
+with IAM_USER the Lambda is only invoked if the request have an IAM User or Role 
+credentials which has an ALLOW policy to invoke
 that Lambda function
 
 
