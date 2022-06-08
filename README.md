@@ -6,14 +6,14 @@ via HTTPS request without the need of any other AWS service to handle the reques
 
 Lambda URLs come with two AuthTypes (NONE and IAM_USER), with NONE everyone with the endpoint can make requests and 
 with IAM_USER the Lambda is only invoked if the request have an IAM User or Role 
-credentials which has an ALLOW policy to invoke
-that Lambda function
+credentials which has an ALLOW policy to invoke that Lambda function.
 
 
 The main objective of this project is to test and demonstrate how Cognito authenticated 
 users could assume an IAM Role and pass those credentials on the Lambda URL HTTPS request to invoke it.
 
 ## Project Architecture
+Diagrams to show the project architecture.
 
 ### Lambda Function URL execution
 ![img_1.png](docs_assets/lambda_url_diagram.png)
@@ -34,7 +34,7 @@ users could assume an IAM Role and pass those credentials on the Lambda URL HTTP
 
 
 ### Setup the environment
-Steps to guid how to deploy the project to AWS using CDK
+Steps to guid how to deploy the project to AWS using CDK.
 
 <br>
 
@@ -67,14 +67,14 @@ cdk bootstrap
 
 #### Deploy the infra
 ```shell
-run cdk deploy
+cdk deploy
 ```
 
 <br>
 
 ### Test using Step Functions
 Guide on how to use the Step functions to create/login a Cognito User and use
-its credentials to invoke the Lambda Function URL (LambdaServer)
+its credentials to invoke the Lambda Function URL (LambdaServer).
 
 <br>
 
