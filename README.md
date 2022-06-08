@@ -34,6 +34,11 @@ users could assume an IAM Role and pass those credentials on the Lambda URL HTTP
 
 
 ### Setup the environment
+Steps to guid how to deploy the project to AWS using CDK
+
+<br>
+
+
 #### Go to IaC folder (all the commands bellow should be executed on the IaC folder)
 ```shell
 cd IaC
@@ -41,7 +46,6 @@ cd IaC
 
 #### Create .env file with the AWS Account Id and Region to deploy the infra
 example of .env file:
-
 ```dotenv
 CDK_DEFAULT_ACCOUNT="123456789012"
 CDK_DEFAULT_REGION="us-east-1"
@@ -66,11 +70,15 @@ cdk bootstrap
 run cdk deploy
 ```
 
+<br>
 
-### Test using Step Functions Console
+### Test using Step Functions
+Guide on how to use the Step functions to create/login a Cognito User and use
+its credentials to invoke the Lambda Function URL (LambdaServer)
 
-#### Start execution
-Open LambdaCognitoStateMachine via console and click "Start Execution"
+<br>
+
+#### Open LambdaCognitoStateMachine via console and click "Start Execution"
 ![img_1.png](docs_assets/step_functions_state_machine.png)
 
 #### Set the input parameters
