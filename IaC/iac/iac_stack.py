@@ -7,38 +7,17 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+from .cognito_stack import CognitoStack
+
+
 class IaCStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-
         # Setup Cognito
+        cognitoStack = CognitoStack(self)
 
-        cognitoUserPool = cognito.UserPool(self, "UserPool",
-            user_pool_name="ExampleUserPool",
-            self_sign_up_enabled=True,
-            sign_in_aliases=cognito.SignInAliases(
-                username=True,
-                email=True
-            ),
-
-        )
-
-        cognitoClient = cognitoUserPool.add_client("ExampleClient",
-           auth_flows=cognito.AuthFlow(user_password=True),
-           user_pool_client_name="ExampleClient"
-        )
-
-        cognitoIdentityPool = cognito.CfnIdentityPool(self, "ExampleIdentityPool",
-            allow_unauthenticated_identities=False,
-            cognito_identity_providers=[
-                cognito.CfnIdentityPool.CognitoIdentityProviderProperty(
-                    client_id=cognitoClient.user_pool_client_id,
-                    provider_name=f"cognito-idp.{self.region}.amazonaws.com/{cognitoUserPool.user_pool_id}"
-                )
-            ]
-        )
 
         # Setup Lambda Functions
 
@@ -54,8 +33,8 @@ class IaCStack(Stack):
             code=lambda_.Code.from_asset('../lambda_functions/cognito_login'),
             handler='cognito_login.lambda_handler',
             environment={
-                'USER_POOL_ID': cognitoUserPool.user_pool_id,
-                'CLIENT_ID': cognitoClient.user_pool_client_id
+                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
+                'CLIENT_ID': cognitoStack.cognitoClient.user_pool_client_id
             }
         )
 
@@ -65,8 +44,8 @@ class IaCStack(Stack):
             code=lambda_.Code.from_asset('../lambda_functions/cognito_signup'),
             handler='cognito_signup.lambda_handler',
             environment={
-                'USER_POOL_ID': cognitoUserPool.user_pool_id,
-                'CLIENT_ID': cognitoClient.user_pool_client_id
+                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
+                'CLIENT_ID': cognitoStack.cognitoClient.user_pool_client_id
             }
         )
 
@@ -77,7 +56,7 @@ class IaCStack(Stack):
                     "cognito-idp:AdminConfirmSignUp"
                 ],
                 resources=[
-                    cognitoUserPool.user_pool_arn
+                    cognitoStack.cognitoUserPool.user_pool_arn
                 ]
             )
         )
@@ -87,9 +66,9 @@ class IaCStack(Stack):
             code=lambda_.Code.from_asset('../lambda_functions/cognito_get_credentials'),
             handler='cognito_get_credentials.lambda_handler',
             environment={
-                'IDENTITY_POOL_ID': cognitoIdentityPool.ref,
+                'IDENTITY_POOL_ID': cognitoStack.cognitoIdentityPool.ref,
                 'IDENTITY_POOL_REGION': self.region,
-                'USER_POOL_ID': cognitoUserPool.user_pool_id,
+                'USER_POOL_ID': cognitoStack.cognitoUserPool.user_pool_id,
             }
         )
 
@@ -102,7 +81,7 @@ class IaCStack(Stack):
                     'cognito-identity:GetId'
                     ],
                 resources=[
-                    f"arn:aws:cognito-identity:{self.region}:{self.account}:identitypool/{cognitoIdentityPool.ref}"
+                    f"arn:aws:cognito-identity:{self.region}:{self.account}:identitypool/{cognitoStack.cognitoIdentityPool.ref}"
                 ],
                 effect=iam.Effect.ALLOW
             )
@@ -123,7 +102,7 @@ class IaCStack(Stack):
         cognitoAuthRole = iam.Role(self, "CognitoAuthRole",
             assumed_by=iam.WebIdentityPrincipal("cognito-identity.amazonaws.com",
                     {
-                        "StringEquals": {"cognito-identity.amazonaws.com:aud": f"{cognitoIdentityPool.ref}"}
+                        "StringEquals": {"cognito-identity.amazonaws.com:aud": f"{cognitoStack.cognitoIdentityPool.ref}"}
                     }
             )
         )
@@ -132,7 +111,7 @@ class IaCStack(Stack):
 
 
         cognito.CfnIdentityPoolRoleAttachment(self, "CognitoIdentityPoolRoleAttachment",
-            identity_pool_id=cognitoIdentityPool.ref,
+            identity_pool_id=cognitoStack.cognitoIdentityPool.ref,
             roles={
                 "authenticated": cognitoAuthRole.role_arn
             }
